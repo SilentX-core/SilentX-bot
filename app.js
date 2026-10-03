@@ -1,93 +1,228 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Particle nền sao
-  const canvas = document.getElementById("galaxy-bg");
+
+  // ===== QUICK SELECTOR =====
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => document.querySelectorAll(selector);
+
+  // ===== TOAST SYSTEM =====
+  function showToast(message, type = "success") {
+    const container =
+      document.getElementById("toast-container") ||
+      (() => {
+        const div = document.createElement("div");
+        div.id = "toast-container";
+        document.body.appendChild(div);
+        return div;
+      })();
+
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+      <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 50);
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // ===== GALAXY BACKGROUND =====
+  const canvas = $("#galaxy-bg");
+
   if (canvas) {
     const ctx = canvas.getContext("2d");
-    let w = canvas.width = window.innerWidth;
-    let h = canvas.height = window.innerHeight;
-    const stars = Array.from({ length: 90 }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 1.5 + 0.3,
-      speed: Math.random() * 0.3 + 0.1
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    const stars = Array.from({ length: 40 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      radius: Math.random() * 1.2 + 0.3,
+      speed: Math.random() * 0.4 + 0.1
     }));
-    function draw() {
-      ctx.clearRect(0,0,w,h);
-      ctx.fillStyle = '#070913';
-      ctx.fillRect(0,0,w,h);
-      ctx.fillStyle = 'rgba(255,255,255,0.85)';
-      stars.forEach(s => {
+
+    function animateStars() {
+      ctx.clearRect(0, 0, width, height);
+
+      stars.forEach(star => {
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255,0.25)";
         ctx.fill();
-        s.y -= s.speed;
-        if (s.y < 0) s.y = h;
+
+        star.y -= star.speed;
+
+        if (star.y < -10) {
+          star.y = height + 10;
+          star.x = Math.random() * width;
+        }
       });
-      requestAnimationFrame(draw);
+
+      requestAnimationFrame(animateStars);
     }
-    draw();
+
+    animateStars();
+
     window.addEventListener("resize", () => {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
     });
   }
 
-  // 2. Sidebar Menu 3 gạch
-  const menuBtn = document.getElementById("menu-btn");
-  const closeSidebarBtn = document.getElementById("close-sidebar-btn");
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("sidebar-overlay");
+  // ===== SIDEBAR =====
+  const sidebar = $("#sidebar");
+  const overlay = $("#sidebar-overlay");
 
   function openSidebar() {
-    sidebar.classList.add("open");
-    overlay.classList.add("open");
+    sidebar?.classList.add("open");
+    overlay?.classList.add("open");
   }
 
   function closeSidebar() {
-    sidebar.classList.remove("open");
-    overlay.classList.remove("open");
+    sidebar?.classList.remove("open");
+    overlay?.classList.remove("open");
   }
 
-  if (menuBtn) menuBtn.addEventListener("click", openSidebar);
-  if (closeSidebarBtn) closeSidebarBtn.addEventListener("click", closeSidebar);
-  if (overlay) overlay.addEventListener("click", closeSidebar);
+  $("#menu-btn")?.addEventListener("click", openSidebar);
+  $("#close-sidebar-btn")?.addEventListener("click", closeSidebar);
+  overlay?.addEventListener("click", closeSidebar);
 
-  // 3. Chuyển đổi Tab
-  const tabs = document.querySelectorAll(".nav-tab");
-  const panes = document.querySelectorAll(".tab-pane");
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSidebar();
+  });
+
+  // ===== TAB SYSTEM =====
+  const tabs = $$(".nav-tab");
+  const panes = $$(".tab-pane");
+
+  function switchTab(tabName) {
+
+    tabs.forEach(tab => {
+      tab.classList.toggle(
+        "active",
+        tab.dataset.tab === tabName
+      );
+    });
+
+    panes.forEach(pane => {
+      pane.classList.toggle(
+        "active",
+        pane.id === tabName
+      );
+    });
+
+    localStorage.setItem("activeTab", tabName);
+
+    if (window.innerWidth <= 768) {
+      closeSidebar();
+    }
+  }
 
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      panes.forEach(p => p.classList.remove("active"));
-      tab.classList.add("active");
-      const target = document.getElementById(tab.dataset.tab);
-      if (target) target.classList.add("active");
-      if (window.innerWidth <= 768) closeSidebar();
+      switchTab(tab.dataset.tab);
     });
   });
 
-  // 4. Tạo kết nối kênh Discord - Telegram
-  const createBridgeBtn = document.getElementById("btn-create-bridge");
-  if (createBridgeBtn) {
-    createBridgeBtn.addEventListener("click", async () => {
-      const discordId = document.getElementById("bridge-discord-id").value.trim();
-      const telegramId = document.getElementById("bridge-telegram-id").value.trim();
+  const savedTab = localStorage.getItem("activeTab");
 
-      if (!discordId || !telegramId) {
-        alert("Vui lòng nhập cả Discord Channel ID và Telegram Chat ID!");
-        return;
+  if (savedTab) {
+    switchTab(savedTab);
+  }
+
+  // ===== CREATE BRIDGE =====
+  const createBridgeBtn = $("#btn-create-bridge");
+
+  createBridgeBtn?.addEventListener("click", async () => {
+
+    const discordId =
+      $("#bridge-discord-id")?.value.trim();
+
+    const telegramId =
+      $("#bridge-telegram-id")?.value.trim();
+
+    if (!discordId || !telegramId) {
+      showToast(
+        "Vui lòng nhập đầy đủ thông tin.",
+        "error"
+      );
+      return;
+    }
+
+    if (!/^\d+$/.test(discordId)) {
+      showToast(
+        "Discord Channel ID không hợp lệ.",
+        "error"
+      );
+      return;
+    }
+
+    if (!/^-?\d+$/.test(telegramId)) {
+      showToast(
+        "Telegram Chat ID không hợp lệ.",
+        "error"
+      );
+      return;
+    }
+
+    createBridgeBtn.disabled = true;
+    createBridgeBtn.innerHTML =
+      '<i class="fa-solid fa-spinner fa-spin"></i> Đang tạo...';
+
+    try {
+
+      await new Promise(resolve =>
+        setTimeout(resolve, 800)
+      );
+
+      const bridgeList = $("#bridge-list");
+
+      if (bridgeList) {
+        bridgeList.innerHTML = `
+          <div class="bridge-card">
+            <div class="bridge-title">
+              ✅ Kết nối đang hoạt động
+            </div>
+
+            <div class="bridge-item">
+              <i class="fa-brands fa-discord"></i>
+              Discord:
+              <code>${discordId}</code>
+            </div>
+
+            <div class="bridge-item">
+              <i class="fa-brands fa-telegram"></i>
+              Telegram:
+              <code>${telegramId}</code>
+            </div>
+          </div>
+        `;
       }
 
-      const bridgeList = document.getElementById("bridge-list");
-      bridgeList.innerHTML = `
-        <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(0, 242, 254, 0.3);">
-          <div style="font-weight: 600; color: #00f2fe; margin-bottom: 4px;">Cầu nối đang hoạt động:</div>
-          <div><i class="fa-brands fa-discord" style="color: #5865F2;"></i> Discord ID: <code>${discordId}</code></div>
-          <div><i class="fa-brands fa-telegram" style="color: #229ED9;"></i> Telegram ID: <code>${telegramId}</code></div>
-        </div>
-      `;
-      alert("Đã thiết lập cầu nối kênh thành công!");
-    });
-  }
+      showToast(
+        "Tạo cầu nối thành công."
+      );
+
+    } catch (error) {
+
+      showToast(
+        "Không thể tạo kết nối.",
+        "error"
+      );
+
+    } finally {
+
+      createBridgeBtn.disabled = false;
+
+      createBridgeBtn.innerHTML =
+        '<i class="fa-solid fa-link"></i> Tạo kết nối';
+    }
+  });
+
 });
