@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cosmic Control Center - Client Portal</title>
+  <title>SilentX Control Center</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -11,27 +11,25 @@
   <canvas id="galaxy-bg"></canvas>
 
   <div class="app-layout">
-    <!-- Nút mở Menu 3 gạch trên Mobile/Desktop -->
     <header class="topbar">
       <button id="menu-btn" class="icon-btn" aria-label="Menu">
         <i class="fa-solid fa-bars"></i>
       </button>
       <div class="logo">
-        <i class="fa-solid fa-shuttle-space"></i>
-        <span>COSMIC CONTROL</span>
+        <i class="fa-solid fa-meteor"></i>
+        <span>SILENTX CONTROL</span>
       </div>
       <div class="user-status">
         <span class="status-dot"></span>
-        <span id="user-display">Chưa kết nối</span>
+        <span id="user-display">Đã kết nối</span>
       </div>
     </header>
 
-    <!-- Sidebar Menu 3 gạch trượt mượt mà -->
     <aside id="sidebar" class="sidebar">
       <div class="sidebar-header">
         <div class="brand">
-          <i class="fa-solid fa-meteor"></i>
-          <span>SILENTX SUITE</span>
+          <i class="fa-solid fa-shuttle-space"></i>
+          <span>WORKSPACE</span>
         </div>
         <button id="close-sidebar-btn" class="icon-btn close-btn">
           <i class="fa-solid fa-xmark"></i>
@@ -39,7 +37,11 @@
       </div>
 
       <nav class="sidebar-nav">
-        <button class="nav-tab active" data-tab="tab-overview">
+        <button class="nav-tab active" data-tab="tab-bridge">
+          <i class="fa-solid fa-arrow-right-arrow-left"></i>
+          <span>Kết nối kênh</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-overview">
           <i class="fa-solid fa-gauge-high"></i>
           <span>Tổng quan Panel</span>
         </button>
@@ -47,13 +49,9 @@
           <i class="fa-brands fa-discord"></i>
           <span>Quản lý Bot Core</span>
         </button>
-        <button class="nav-tab" data-tab="tab-database">
-          <i class="fa-solid fa-database"></i>
-          <span>SQLite Database</span>
-        </button>
         <button class="nav-tab" data-tab="tab-settings">
           <i class="fa-solid fa-sliders"></i>
-          <span>Cấu hình Kết nối</span>
+          <span>Cấu hình Endpoint</span>
         </button>
       </nav>
 
@@ -66,126 +64,84 @@
 
     <div id="sidebar-overlay" class="overlay"></div>
 
-    <!-- Nội dung chính chia theo Tab -->
     <main class="main-content">
-      <!-- TAB 1: TỔNG QUAN -->
-      <section id="tab-overview" class="tab-pane active">
+      <!-- TAB 1: KẾT NỐI KÊNH (CẦU NỐI DISCORD VÀ TELEGRAM) -->
+      <section id="tab-bridge" class="tab-pane active">
+        <div class="section-title">
+          <h2>Kết nối kênh</h2>
+          <p>Tạo cầu nối đồng bộ tin nhắn 2 chiều giữa Discord và Telegram.</p>
+        </div>
+
+        <div class="glass-card bridge-card">
+          <h3>Tạo kết nối mới</h3>
+          <div class="form-group">
+            <label>Discord Channel ID</label>
+            <input type="text" id="bridge-discord-id" placeholder="ID kênh Discord (VD: 120593829102938472)">
+          </div>
+          <div class="form-group">
+            <label>Telegram Chat ID</label>
+            <input type="text" id="bridge-telegram-id" placeholder="ID nhóm Telegram (VD: -1001928374652)">
+          </div>
+          <button class="btn btn-primary" id="btn-create-bridge">
+            <i class="fa-solid fa-plus"></i> Tạo kết nối
+          </button>
+        </div>
+
+        <div class="glass-card current-bridges">
+          <h3>Các kết nối hiện tại</h3>
+          <div id="bridge-list" class="bridge-items">
+            <div class="bridge-item empty">Chưa có kênh nào được kết nối. Hãy tạo kết nối đầu tiên phía trên.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: TỔNG QUAN PANEL -->
+      <section id="tab-overview" class="tab-pane">
         <div class="grid-cards">
           <div class="glass-card stat-card">
             <div class="card-icon cyan"><i class="fa-solid fa-microchip"></i></div>
             <div class="card-info">
-              <h3>CPU / Hệ thống</h3>
-              <p id="stat-cpu">14.8% (Node 26)</p>
-              <div class="progress-bar"><div class="fill" style="width: 15%"></div></div>
+              <h3>CPU Hệ thống</h3>
+              <p id="stat-cpu">12.5% (Node 26)</p>
             </div>
           </div>
           <div class="glass-card stat-card">
             <div class="card-icon purple"><i class="fa-solid fa-memory"></i></div>
             <div class="card-info">
-              <h3>Bộ nhớ RAM</h3>
-              <p id="stat-ram">168 MB / 1024 MB</p>
-              <div class="progress-bar"><div class="fill purple-fill" style="width: 25%"></div></div>
-            </div>
-          </div>
-          <div class="glass-card stat-card">
-            <div class="card-icon pink"><i class="fa-solid fa-signal"></i></div>
-            <div class="card-info">
-              <h3>Độ trễ API</h3>
-              <p id="stat-ping">24 ms (Online)</p>
-              <div class="progress-bar"><div class="fill pink-fill" style="width: 10%"></div></div>
+              <h3>RAM Đang dùng</h3>
+              <p id="stat-ram">164 MB / 1024 MB</p>
             </div>
           </div>
         </div>
 
-        <div class="glass-card live-console">
-          <div class="card-header">
-            <h3><i class="fa-solid fa-terminal"></i> Terminal Trực tiếp</h3>
-            <button class="btn btn-sm" id="btn-clear-logs"><i class="fa-solid fa-trash-can"></i> Xóa log</button>
-          </div>
+        <div class="glass-card">
+          <h3><i class="fa-solid fa-terminal"></i> Terminal Trực tiếp</h3>
           <div class="terminal-body" id="terminal-logs">
-            <div class="log-line info">[SISTEM] Giao diện Galaxy đã nạp thành công từ GitHub Pages.</div>
-            <div class="log-line success">[CONNECT] Đã thiết lập kênh giao tiếp với Hosting Panel API.</div>
+            <div class="log-line info">[SYSTEM] Đã nạp giao diện SilentX Control Center.</div>
           </div>
         </div>
       </section>
 
-      <!-- TAB 2: QUẢN LÝ BOT -->
+      <!-- TAB 3: QUẢN LÝ BOT -->
       <section id="tab-bots" class="tab-pane">
         <div class="grid-two">
           <div class="glass-card bot-card">
-            <div class="card-header">
-              <div class="bot-title">
-                <i class="fa-brands fa-discord discord-color"></i>
-                <h3>Discord Gateway Core</h3>
-              </div>
-              <span class="badge online" id="badge-discord">Đang chạy</span>
-            </div>
-            <p class="bot-desc">Hỗ trợ song song Slash Commands và Prefix Commands, kiến trúc module sạch.</p>
+            <h3><i class="fa-brands fa-discord discord-color"></i> Discord Gateway</h3>
+            <span class="badge online">Đang chạy</span>
+            <p>Hỗ trợ Prefix Command và Slash Command.</p>
             <div class="btn-group">
-              <button class="btn btn-success" id="btn-start-discord"><i class="fa-solid fa-play"></i> Bật Bot</button>
-              <button class="btn btn-danger" id="btn-stop-discord"><i class="fa-solid fa-stop"></i> Dừng</button>
-              <button class="btn btn-secondary" id="btn-restart-discord"><i class="fa-solid fa-rotate-right"></i> Khởi động lại</button>
+              <button class="btn btn-success"><i class="fa-solid fa-play"></i> Bật</button>
+              <button class="btn btn-danger"><i class="fa-solid fa-stop"></i> Dừng</button>
             </div>
           </div>
-
           <div class="glass-card bot-card">
-            <div class="card-header">
-              <div class="bot-title">
-                <i class="fa-brands fa-telegram telegram-color"></i>
-                <h3>Telegram Bot Polling</h3>
-              </div>
-              <span class="badge online" id="badge-telegram">Đang chạy</span>
-            </div>
-            <p class="bot-desc">Bộ xử lý tin nhắn, tích hợp Webhook và Auto Responder bảo mật.</p>
+            <h3><i class="fa-brands fa-telegram telegram-color"></i> Telegram Polling</h3>
+            <span class="badge online">Đang chạy</span>
+            <p>Xử lý tin nhắn và bridge chuyển tiếp nội dung.</p>
             <div class="btn-group">
-              <button class="btn btn-success" id="btn-start-telegram"><i class="fa-solid fa-play"></i> Bật Bot</button>
-              <button class="btn btn-danger" id="btn-stop-telegram"><i class="fa-solid fa-stop"></i> Dừng</button>
-              <button class="btn btn-secondary" id="btn-restart-telegram"><i class="fa-solid fa-rotate-right"></i> Khởi động lại</button>
+              <button class="btn btn-success"><i class="fa-solid fa-play"></i> Bật</button>
+              <button class="btn btn-danger"><i class="fa-solid fa-stop"></i> Dừng</button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 3: SQLITE DATABASE -->
-      <section id="tab-database" class="tab-pane">
-        <div class="glass-card">
-          <div class="card-header">
-            <h3><i class="fa-solid fa-table"></i> Quản lý SQLite Database</h3>
-            <button class="btn btn-primary btn-sm" id="btn-backup-db">
-              <i class="fa-solid fa-floppy-disk"></i> Tạo bản sao lưu .sqlite
-            </button>
-          </div>
-          <div class="table-responsive">
-            <table class="glass-table">
-              <thead>
-                <tr>
-                  <th>Tên bảng</th>
-                  <th>Số bản ghi</th>
-                  <th>Kích thước</th>
-                  <th>Cập nhật cuối</th>
-                </tr>
-              </thead>
-              <tbody id="db-table-body">
-                <tr>
-                  <td><code>users</code></td>
-                  <td>12</td>
-                  <td>16 KB</td>
-                  <td>Vừa xong</td>
-                </tr>
-                <tr>
-                  <td><code>bot_configs</code></td>
-                  <td>2</td>
-                  <td>8 KB</td>
-                  <td>2 phút trước</td>
-                </tr>
-                <tr>
-                  <td><code>activity_logs</code></td>
-                  <td>348</td>
-                  <td>64 KB</td>
-                  <td>Trực tiếp</td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
       </section>
@@ -193,19 +149,12 @@
       <!-- TAB 4: CẤU HÌNH -->
       <section id="tab-settings" class="tab-pane">
         <div class="glass-card form-card">
-          <h3><i class="fa-solid fa-link"></i> Cấu hình Địa chỉ Hosting Panel (Backend API)</h3>
-          <p class="subtitle">Nhập tên miền hoặc IP của Hosting Panel nơi đang treo backend Node.js.</p>
+          <h3>Cấu hình Hosting Panel API</h3>
           <div class="form-group">
             <label>API Base URL:</label>
-            <input type="text" id="api-url-input" placeholder="https://api.yourdomain.com hoặc http://ip:port">
+            <input type="text" id="api-url-input" placeholder="https://api.yourdomain.com">
           </div>
-          <div class="form-group">
-            <label>Master Secret Token:</label>
-            <input type="password" id="api-key-input" placeholder="Nhập API Token đã đặt trong .env">
-          </div>
-          <button class="btn btn-primary" id="btn-save-settings">
-            <i class="fa-solid fa-check"></i> Lưu và Kết nối
-          </button>
+          <button class="btn btn-primary" id="btn-save-settings">Lưu cấu hình</button>
         </div>
       </section>
     </main>
