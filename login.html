@@ -2,79 +2,355 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đăng nhập - Cosmic Control Center</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SilentX Control Center - Đăng nhập</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body class="auth-page">
-  <canvas id="galaxy-bg"></canvas>
+  <style>
+    :root {
+      --bg: #070913;
+      --card-bg: rgba(15, 20, 38, 0.75);
+      --border-color: rgba(99, 102, 241, 0.25);
+      --cyan: #00f2fe;
+      --indigo: #6366f1;
+      --discord: #5865F2;
+      --discord-hover: #4752c4;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
 
-  <div class="login-wrapper">
-    <div class="glass-card auth-card">
-      <div class="auth-header">
-        <i class="fa-solid fa-meteor brand-icon"></i>
-        <h2>COSMIC CONTROL</h2>
-        <p>Đăng nhập hệ thống điều khiển</p>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow-x: hidden;
+      padding: 16px;
+    }
+
+    #galaxy-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .nebula-glow {
+      position: fixed;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(0, 242, 254, 0.12) 50%, transparent 75%);
+      filter: blur(50px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .login-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(99, 102, 241, 0.2);
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-icon-box {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 12px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(99, 102, 241, 0.3));
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: var(--cyan);
+    }
+
+    .brand-header h1 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff, #a5b4fc, var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .brand-header p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .discord-btn {
+      width: 100%;
+      background: var(--discord);
+      color: #ffffff;
+      border: none;
+      padding: 13px 18px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 18px rgba(88, 101, 242, 0.35);
+      transition: all 0.25s ease;
+      margin-bottom: 20px;
+    }
+
+    .discord-btn:hover {
+      background: var(--discord-hover);
+      transform: translateY(-2px);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .divider span {
+      padding: 0 12px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+    }
+
+    .input-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-box i {
+      position: absolute;
+      left: 16px;
+      color: var(--text-muted);
+    }
+
+    .input-box input {
+      width: 100%;
+      background: rgba(7, 9, 19, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 12px 16px 12px 44px;
+      font-size: 0.95rem;
+      color: #ffffff;
+      outline: none;
+    }
+
+    .input-box input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 242, 254, 0.3);
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--cyan) 0%, #4facfe 100%);
+      color: #070913;
+      border: none;
+      padding: 13px;
+      border-radius: 12px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .submit-btn:hover {
+      opacity: 0.92;
+      transform: translateY(-2px);
+    }
+
+    .msg-box {
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      display: none;
+      text-align: center;
+    }
+
+    .msg-box.success {
+      display: block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="galaxy-canvas"></canvas>
+  <div class="nebula-glow"></div>
+
+  <div class="login-container">
+    <div class="brand-header">
+      <div class="brand-icon-box">
+        <i class="fa-solid fa-meteor"></i>
+      </div>
+      <h1>SILENTX CONTROL</h1>
+      <p>Cổng điều khiển kết nối Discord & Telegram</p>
+    </div>
+
+    <!-- Nút Đăng nhập Discord -->
+    <a href="#" id="discord-login-btn" class="discord-btn">
+      <i class="fa-brands fa-discord"></i>
+      <span>Đăng nhập với Discord</span>
+    </a>
+
+    <div class="divider">
+      <span>Hoặc đăng nhập mật khẩu</span>
+    </div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label for="username">Tên người dùng / Admin</label>
+        <div class="input-box">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" id="username" placeholder="Nhập tên tài khoản..." required>
+        </div>
       </div>
 
-      <form id="login-form">
-        <div class="form-group">
-          <label><i class="fa-solid fa-user"></i> Tên người dùng</label>
-          <input type="text" id="username" placeholder="Nhập admin" required>
+      <div class="form-group">
+        <label for="password">Mật khẩu bảo mật</label>
+        <div class="input-box">
+          <i class="fa-solid fa-key"></i>
+          <input type="password" id="password" placeholder="Nhập mật khẩu..." required>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label><i class="fa-solid fa-lock"></i> Mật khẩu</label>
-          <input type="password" id="password" placeholder="Nhập mật khẩu" required>
-        </div>
+      <button type="submit" class="submit-btn">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        <span>Đăng nhập hệ thống</span>
+      </button>
 
-        <button type="submit" class="btn btn-primary btn-block">
-          <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
-        </button>
-      </form>
+      <div id="status-msg" class="msg-box"></div>
+    </form>
+
+    <div class="footer-note">
+      SilentX Control Center • Node.js 26 & GitHub Pages
     </div>
   </div>
 
   <script>
-    // Particle galaxy nhỏ cho login
-    const canvas = document.getElementById('galaxy-bg');
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      let w = canvas.width = window.innerWidth;
-      let h = canvas.height = window.innerHeight;
-      const stars = Array.from({ length: 90 }, () => ({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        r: Math.random() * 1.6 + 0.4,
-        speed: Math.random() * 0.4 + 0.1
-      }));
-      function draw() {
-        ctx.clearRect(0,0,w,h);
-        ctx.fillStyle = '#0a0d1a';
-        ctx.fillRect(0,0,w,h);
-        ctx.fillStyle = 'rgba(255,255,255,0.85)';
-        stars.forEach(s => {
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fill();
-          s.y -= s.speed;
-          if (s.y < 0) s.y = h;
-        });
-        requestAnimationFrame(draw);
-      }
-      draw();
-      window.addEventListener('resize', () => {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight;
-      });
-    }
+    const DISCORD_CLIENT_ID = ""; // Điền Discord Client ID nếu muốn OAuth2 thật
+    const REDIRECT_URI = encodeURIComponent(window.location.origin + window.location.pathname);
 
-    document.getElementById('login-form').addEventListener('submit', (e) => {
+    document.getElementById("discord-login-btn").addEventListener("click", (e) => {
       e.preventDefault();
-      localStorage.setItem('cosmic_token', 'logged_in_valid_token');
-      localStorage.setItem('cosmic_user', document.getElementById('username').value);
-      window.location.href = 'index.html';
+      if (DISCORD_CLIENT_ID) {
+        window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=token&scope=identify%20guilds`;
+      } else {
+        const msg = document.getElementById("status-msg");
+        msg.className = "msg-box success";
+        msg.textContent = "Đang cấp quyền truy cập tài khoản Discord...";
+        setTimeout(() => {
+          localStorage.setItem("cosmic_token", "discord_oauth2_verified");
+          localStorage.setItem("cosmic_user", "Discord User");
+          window.location.href = "index.html";
+        }, 700);
+      }
+    });
+
+    document.getElementById("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const user = document.getElementById("username").value.trim();
+      const msg = document.getElementById("status-msg");
+      msg.className = "msg-box success";
+      msg.textContent = "Đăng nhập thành công! Đang vào bảng điều khiển...";
+      localStorage.setItem("cosmic_token", "panel_token_" + Date.now());
+      localStorage.setItem("cosmic_user", user || "Admin");
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 600);
+    });
+
+    // Hiệu ứng Canvas Galaxy
+    const canvas = document.getElementById("galaxy-canvas");
+    const ctx = canvas.getContext("2d");
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+    const stars = Array.from({ length: 90 }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: Math.random() * 1.6 + 0.3,
+      speed: Math.random() * 0.35 + 0.1
+    }));
+    function draw() {
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle = '#070913';
+      ctx.fillRect(0,0,w,h);
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      stars.forEach(s => {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+        s.y -= s.speed;
+        if (s.y < 0) s.y = h;
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+    window.addEventListener("resize", () => {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
     });
   </script>
 </body>
