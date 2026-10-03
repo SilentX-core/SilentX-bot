@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập - Cosmic Control Center</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="auth-page">
+  <canvas id="galaxy-bg"></canvas>
+
+  <div class="login-wrapper">
+    <div class="glass-card auth-card">
+      <div class="auth-header">
+        <i class="fa-solid fa-meteor brand-icon"></i>
+        <h2>COSMIC CONTROL</h2>
+        <p>Đăng nhập hệ thống điều khiển</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label><i class="fa-solid fa-user"></i> Tên người dùng</label>
+          <input type="text" id="username" placeholder="Nhập admin" required>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-lock"></i> Mật khẩu</label>
+          <input type="password" id="password" placeholder="Nhập mật khẩu" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Particle galaxy nhỏ cho login
+    const canvas = document.getElementById('galaxy-bg');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+      const stars = Array.from({ length: 90 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.6 + 0.4,
+        speed: Math.random() * 0.4 + 0.1
+      }));
+      function draw() {
+        ctx.clearRect(0,0,w,h);
+        ctx.fillStyle = '#0a0d1a';
+        ctx.fillRect(0,0,w,h);
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        stars.forEach(s => {
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fill();
+          s.y -= s.speed;
+          if (s.y < 0) s.y = h;
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+      window.addEventListener('resize', () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+    }
+
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      localStorage.setItem('cosmic_token', 'logged_in_valid_token');
+      localStorage.setItem('cosmic_user', document.getElementById('username').value);
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>
