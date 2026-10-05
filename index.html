@@ -1,415 +1,109 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SilentX • Control Center</title>
-
-  <link rel="stylesheet" href="style.css">
-
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SilentX Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <canvas id="galaxy-bg"></canvas>
-
-  <div class="app-layout">
-
-    <!-- TOPBAR -->
-    <header class="topbar">
-
-      <button id="menu-btn" class="icon-btn" aria-label="Menu">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-
-      <div class="logo">
-        <div class="logo-icon">
-          <i class="fa-solid fa-shield-halved"></i>
-        </div>
-
-        <div class="logo-text">
-          <strong>SilentX</strong>
-          <small>Control Center</small>
-        </div>
-      </div>
-
-      <div class="quick-stats">
-
-        <div class="quick-item">
-          <i class="fa-solid fa-server"></i>
-          <span>Online</span>
-        </div>
-
-        <div class="quick-item">
-          <i class="fa-solid fa-link"></i>
-          <span id="bridge-counter">0 Bridge</span>
-        </div>
-
-      </div>
-
-      <div class="user-status">
-        <span class="status-dot"></span>
-        <span id="user-display">Đã kết nối</span>
-      </div>
-
-    </header>
-
-    <!-- SIDEBAR -->
-    <aside id="sidebar" class="sidebar">
-
-      <div class="sidebar-header">
-
-        <div class="brand">
-          <i class="fa-solid fa-rocket"></i>
-          <span>WORKSPACE</span>
-        </div>
-
-        <button id="close-sidebar-btn" class="icon-btn close-btn">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-
-      </div>
-
-      <nav class="sidebar-nav">
-
-        <button class="nav-tab active" data-tab="tab-overview">
-          <i class="fa-solid fa-gauge-high"></i>
-          <span>Tổng quan</span>
-        </button>
-
-        <button class="nav-tab" data-tab="tab-bridge">
-          <i class="fa-solid fa-link"></i>
-          <span>Kết nối kênh</span>
-        </button>
-
-        <button class="nav-tab" data-tab="tab-bots">
-          <i class="fa-solid fa-robot"></i>
-          <span>Quản lý Bot</span>
-        </button>
-
-        <button class="nav-tab" data-tab="tab-settings">
-          <i class="fa-solid fa-sliders"></i>
-          <span>Cấu hình</span>
-        </button>
-
-      </nav>
-
-      <div class="sidebar-footer">
-
-        <div class="sidebar-version">
-          SilentX v1.0.0
-          <br>
-          Made by Hải
-        </div>
-
-        <a href="login.html" class="logout-link">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i>
-          Đăng xuất
-        </a>
-
-      </div>
-
-    </aside>
-
-    <div id="sidebar-overlay" class="overlay"></div>
-
-    <main class="main-content">
-
-      <!-- OVERVIEW -->
-      <section id="tab-overview" class="tab-pane active">
-
-        <div class="section-title">
-          <h2>Tổng quan hệ thống</h2>
-          <p>Trạng thái backend, bridge và tài nguyên hệ thống.</p>
-        </div>
-
-        <div class="grid-cards">
-
-          <div class="glass-card stat-card">
-
-            <div class="card-icon cyan">
-              <i class="fa-solid fa-microchip"></i>
-            </div>
-
-            <div class="card-info">
-              <h3>CPU Hệ thống</h3>
-
-              <div class="stat-value" id="stat-cpu">
-                12.5%
-              </div>
-
-              <div class="progress-bar">
-                <div class="progress-fill" style="width:12.5%"></div>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="glass-card stat-card">
-
-            <div class="card-icon purple">
-              <i class="fa-solid fa-memory"></i>
-            </div>
-
-            <div class="card-info">
-              <h3>RAM Đang dùng</h3>
-
-              <div class="stat-value" id="stat-ram">
-                164 MB
-              </div>
-
-              <div class="progress-bar">
-                <div class="progress-fill" style="width:16%"></div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-        <div class="grid-two">
-
-          <div class="glass-card">
-
-            <h3>
-              <i class="fa-solid fa-heart-pulse"></i>
-              Trạng thái dịch vụ
-            </h3>
-
-            <div class="health-item">
-              <span>Backend API</span>
-              <span class="badge online">ONLINE</span>
-            </div>
-
-            <div class="health-item">
-              <span>Discord Gateway</span>
-              <span class="badge online">ONLINE</span>
-            </div>
-
-            <div class="health-item">
-              <span>Telegram Polling</span>
-              <span class="badge online">ONLINE</span>
-            </div>
-
-          </div>
-
-          <div class="glass-card">
-
-            <h3>
-              <i class="fa-solid fa-chart-line"></i>
-              Thống kê nhanh
-            </h3>
-
-            <div class="health-item">
-              <span>Kết nối Bridge</span>
-              <strong>0</strong>
-            </div>
-
-            <div class="health-item">
-              <span>Bot đang hoạt động</span>
-              <strong>2</strong>
-            </div>
-
-          </div>
-
-        </div>
-
-        <div class="glass-card terminal-card">
-
-          <div class="terminal-header">
-
-            <div class="terminal-dots">
-              <span class="dot red"></span>
-              <span class="dot yellow"></span>
-              <span class="dot green"></span>
-            </div>
-
-            <div class="terminal-title">
-              silentx-terminal
-            </div>
-
-          </div>
-
-          <div class="terminal-body" id="terminal-logs">
-            <div class="log-line info">
-              [SYSTEM] SilentX Control Center đã khởi động.
-            </div>
-          </div>
-
-        </div>
-
-      </section>
-
-      <!-- BRIDGE -->
-      <section id="tab-bridge" class="tab-pane">
-
-        <div class="section-title">
-          <h2>Kết nối kênh</h2>
-          <p>Đồng bộ nội dung Discord và Telegram theo thời gian thực.</p>
-        </div>
-
-        <div class="glass-card bridge-card">
-
-          <div class="card-title">
-            <i class="fa-solid fa-link"></i>
-            <span>Tạo cầu nối Discord ↔ Telegram</span>
-          </div>
-
-          <div class="form-group">
-            <label>Discord Channel ID</label>
-            <input
-              type="text"
-              id="bridge-discord-id"
-              placeholder="Ví dụ: 120593829102938472">
-          </div>
-
-          <div class="form-group">
-            <label>Telegram Chat ID</label>
-            <input
-              type="text"
-              id="bridge-telegram-id"
-              placeholder="Ví dụ: -1001928374652">
-          </div>
-
-          <button class="btn btn-primary" id="btn-create-bridge">
-            <i class="fa-solid fa-link"></i>
-            Tạo kết nối
-          </button>
-
-        </div>
-
-        <div class="glass-card">
-
-          <h3>Kết nối hiện tại</h3>
-
-          <div id="bridge-list" class="bridge-items">
-            <div class="bridge-item empty">
-              Chưa có kết nối nào được tạo.
-            </div>
-          </div>
-
-        </div>
-
-      </section>
-
-      <!-- BOTS -->
-      <section id="tab-bots" class="tab-pane">
-
-        <div class="section-title">
-          <h2>Quản lý Bot</h2>
-          <p>Điều khiển các dịch vụ cốt lõi của hệ thống.</p>
-        </div>
-
-        <div class="grid-two">
-
-          <div class="glass-card bot-card">
-
-            <h3>
-              <i class="fa-brands fa-discord discord-color"></i>
-              Discord Gateway
-            </h3>
-
-            <span class="badge online">
-              Đang chạy
-            </span>
-
-            <p>
-              Prefix Commands, Slash Commands và Message Events.
-            </p>
-
-            <div class="btn-group">
-
-              <button class="btn btn-success">
-                <i class="fa-solid fa-play"></i>
-                Bật
-              </button>
-
-              <button class="btn btn-danger">
-                <i class="fa-solid fa-stop"></i>
-                Dừng
-              </button>
-
-            </div>
-
-          </div>
-
-          <div class="glass-card bot-card">
-
-            <h3>
-              <i class="fa-brands fa-telegram telegram-color"></i>
-              Telegram Polling
-            </h3>
-
-            <span class="badge online">
-              Đang chạy
-            </span>
-
-            <p>
-              Nhận và chuyển tiếp tin nhắn giữa các nền tảng.
-            </p>
-
-            <div class="btn-group">
-
-              <button class="btn btn-success">
-                <i class="fa-solid fa-play"></i>
-                Bật
-              </button>
-
-              <button class="btn btn-danger">
-                <i class="fa-solid fa-stop"></i>
-                Dừng
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      <!-- SETTINGS -->
-      <section id="tab-settings" class="tab-pane">
-
-        <div class="section-title">
-          <h2>Cấu hình hệ thống</h2>
-          <p>Quản lý thông tin kết nối đến Hosting Panel.</p>
-        </div>
-
-        <div class="glass-card form-card">
-
-          <h3>
-            <i class="fa-solid fa-server"></i>
-            Backend Endpoint
-          </h3>
-
-          <div class="form-group">
-            <label>API Base URL</label>
-            <input
-              type="text"
-              id="api-url-input"
-              readonly
-              placeholder="https://api.yourdomain.com">
-          </div>
-
-          <button class="btn btn-primary" id="btn-save-settings">
-            <i class="fa-solid fa-floppy-disk"></i>
-            Lưu cấu hình
-          </button>
-
-        </div>
-
-      </section>
-
-    </main>
-
-  </div>
-
-  <script src="config.js"></script>
-  <script src="app.js"></script>
+    <div class="app">
+
+        <aside class="sidebar">
+            <div class="logo">SilentX</div>
+
+            <nav>
+                <button class="nav-item active">Dashboard</button>
+                <button class="nav-item">Bots</button>
+                <button class="nav-item">Tasks</button>
+                <button class="nav-item">Logs</button>
+                <button class="nav-item">Settings</button>
+            </nav>
+        </aside>
+
+        <main class="main">
+
+            <header class="topbar">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>SilentX Control Center</p>
+                </div>
+
+                <div class="status">
+                    <span></span>
+                    Backend Offline
+                </div>
+            </header>
+
+            <section class="bot-tabs">
+                <button class="bot-tab active">
+                    SilentX-discord
+                </button>
+
+                <button class="bot-tab">
+                    SilentX-telegram
+                </button>
+            </section>
+
+            <section class="cards">
+
+                <div class="card">
+                    <small>Bots</small>
+                    <strong>0</strong>
+                    <span>Online</span>
+                </div>
+
+                <div class="card">
+                    <small>Tasks</small>
+                    <strong>0</strong>
+                    <span>Running</span>
+                </div>
+
+                <div class="card">
+                    <small>Earnings</small>
+                    <strong>0</strong>
+                    <span>Total</span>
+                </div>
+
+                <div class="card">
+                    <small>Uptime</small>
+                    <strong>0m</strong>
+                    <span>System</span>
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <div class="panel-header">
+                    <div>
+                        <h2>System Overview</h2>
+                        <p>Waiting for backend connection...</p>
+                    </div>
+
+                    <button class="primary">
+                        Refresh
+                    </button>
+                </div>
+
+                <div class="empty">
+                    <div class="empty-icon">◈</div>
+                    <h3>Backend chưa kết nối</h3>
+                    <p>
+                        Bước tiếp theo sẽ kết nối dashboard này
+                        với Node.js localhost.
+                    </p>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="app.js"></script>
 
 </body>
 </html>
